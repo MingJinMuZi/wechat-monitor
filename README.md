@@ -70,7 +70,7 @@ node scripts/fetch-article-full.js "https://mp.weixin.qq.com/s/xxx"
 ### 风格分析
 
 ```bash
-node scripts/analyze-style.js "老赵讲道理"
+node scripts/analyze-style.js "XXX 公众号"
 ```
 
 **分析维度**：
@@ -143,7 +143,7 @@ wechat-monitor/
 ### 风格分析报告
 
 ```markdown
-# 老赵讲道理 - 风格分析报告
+# XXX 公众号 - 风格分析报告
 
 ## 标题套路
 - 疑问式：《为什么...？》
