@@ -1,0 +1,39 @@
+{
+  "name": "wechat-monitor",
+  "version": "1.0.0",
+  "description": "微信公众号对标监控系统 - 自动抓取文章、分析数据、生成报告",
+  "main": "index.js",
+  "scripts": {
+    "install:check": "node scripts/check-deps.js",
+    "postinstall": "node scripts/check-deps.js",
+    "add": "node scripts/add-account.js",
+    "fetch": "node scripts/fetch-article.js",
+    "monitor": "node scripts/monitor.js",
+    "analyze": "node scripts/analyze-style.js",
+    "check": "node scripts/check-deps.js",
+    "test": "node scripts/check-deps.js"
+  },
+  "dependencies": {
+    "puppeteer-core": "^21.0.0"
+  },
+  "optionalDependencies": {
+    "sqlite3": "^5.1.6"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "wechat",
+    "公众号",
+    "监控",
+    "爬虫",
+    "puppeteer",
+    "openclaw"
+  ],
+  "author": "Fire",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openclaw/skills/wechat-monitor"
+  }
+}
