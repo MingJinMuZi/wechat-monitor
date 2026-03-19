@@ -1,196 +1,116 @@
 # WeChat Monitor - 安装指南
 
-## 快速安装 (3步)
+## 系统要求
 
-### 第1步: 运行依赖检查
+- Node.js >= 18
+- Python >= 3.10
+- Chromium 浏览器
+
+## 安装步骤
+
+### 1. 克隆项目
 
 ```bash
+git clone https://github.com/MingJinMuZi/wechat-monitor.git
 cd wechat-monitor
+```
+
+### 2. 安装依赖
+
+```bash
+# Node.js 依赖
+npm install
+
+# Python 依赖（可选，用于图片处理）
+pip install requests Pillow
+```
+
+### 3. 配置环境变量
+
+```bash
+# 复制配置模板
+cp .env.example .env
+
+# 编辑 .env 文件，填入你的 Tavily API Key
+# 获取地址：https://app.tavily.com/
+```
+
+### 4. 检查依赖
+
+```bash
 node scripts/check-deps.js
 ```
 
-这个脚本会自动：
-- ✅ 检查Node.js版本 (需要 >= 18)
-- ✅ 检查Chromium浏览器
-- ✅ 自动安装npm依赖 (puppeteer-core)
-- ✅ 创建数据目录
-- ✅ 检查Tavily API配置
-- ✅ 测试浏览器功能
+## 快速开始
 
-### 第2步: 配置API Key (可选)
-
-如果需要AI搜索功能，配置Tavily API Key：
+### 添加对标账号
 
 ```bash
-# 临时配置 (当前终端)
-export TAVILY_API_KEY="tvly-your-key"
-
-# 永久配置 (添加到 ~/.bashrc 或 ~/.zshrc)
-echo 'export TAVILY_API_KEY="tvly-your-key"' >> ~/.bashrc
-source ~/.bashrc
+node scripts/add-account.js "XXX 对标账号" "https://mp.weixin.qq.com/s/xxxxx"
 ```
 
-获取API Key: https://tavily.com
-
-### 第3步: 开始使用
+### 抓取文章
 
 ```bash
-# 添加第一个监控账号
-node scripts/add-account.js "逛逛GitHub" "https://mp.weixin.qq.com/s/xxxxx"
-
-# 抓取文章
+# 抓取单篇文章
 node scripts/fetch-article.js "https://mp.weixin.qq.com/s/xxxxx"
 
-# 监控新文章
-node scripts/monitor.js
+# 完整抓取（文字 + 图片+HTML）
+node scripts/fetch-article-full.js "https://mp.weixin.qq.com/s/xxxxx"
 ```
 
----
-
-## 手动安装 (如果自动安装失败)
-
-### 1. 安装Node.js
+### 风格分析
 
 ```bash
-# Ubuntu/Debian
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# CentOS/RHEL
-curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
-sudo yum install -y nodejs
-
-# Mac
-brew install node
+node scripts/analyze-style.js "XXX 对标账号"
 ```
 
-验证: `node --version` (需要 >= 18)
-
-### 2. 安装Chromium
+### 生成报告
 
 ```bash
-# Ubuntu/Debian
-sudo apt update
-sudo apt install -y chromium-browser
+# 分析最新抓取的文章
+node scripts/generate-report.js "XXX 对标账号"
 
-# CentOS/RHEL
-sudo yum install -y chromium
-
-# Mac
-brew install chromium
+# 分析指定文章
+node scripts/generate-report.js "XXX 对标账号" 2
 ```
 
-验证: `chromium-browser --version`
+## 配置说明
 
-### 3. 安装npm依赖
+### .env 文件
 
 ```bash
-cd wechat-monitor
-npm install
+# Tavily 搜索 API Key（必需）
+TAVILY_API_KEY=your-tavily-api-key-here
+
+# 可选：自定义数据目录
+# CONTENT_STUDIO_DATA_DIR=./data
 ```
-
-### 4. 创建数据目录
-
-```bash
-mkdir -p data
-echo '[]' > data/accounts.json
-echo '[]' > data/articles.json
-```
-
----
 
 ## 常见问题
 
-### Q1: 提示 "Node.js版本过低"
+### Q: Tavily API Key 如何获取？
 
-**解决**: 升级Node.js到18+
+A: 访问 https://app.tavily.com/ 注册并获取免费 API Key。
+
+### Q: 抓取失败怎么办？
+
+A: 检查网络连接，确保能访问微信公众号。
+
+### Q: 如何批量抓取？
+
+A: 使用 monitor 脚本自动监控新文章：
+
 ```bash
-# 使用nvm升级
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-nvm install 20
-nvm use 20
+node scripts/monitor.js
 ```
 
-### Q2: 提示 "未找到Chromium"
+## 下一步
 
-**解决**: 安装Chromium浏览器
-```bash
-# 查找系统中已有的Chrome
-which google-chrome || which chromium-browser || which chromium
-
-# 如果没有，安装
-sudo apt install chromium-browser  # Ubuntu
-sudo yum install chromium          # CentOS
-```
-
-### Q3: puppeteer-core安装失败
-
-**解决**: 使用npm镜像或代理
-```bash
-# 使用淘宝镜像
-npm config set registry https://registry.npmmirror.com
-npm install
-
-# 或使用代理
-npm install --proxy http://proxy.company.com:8080
-```
-
-### Q4: 抓取时超时
-
-**解决**: 检查网络或增加超时时间
-```bash
-# 编辑 scripts/fetch-article.js，增加timeout
-await page.goto(url, { timeout: 120000 });  // 2分钟
-```
-
-### Q5: 内存不足
-
-**解决**: 减少并发或增加swap
-```bash
-# 创建2GB swap
-sudo fallocate -l 2G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-```
+- [查看架构设计](ARCHITECTURE-2G2G.md)
+- [查看报告模板](REPORT-TEMPLATE.md)
+- [查看示例报告](EXAMPLE-REPORT.md)
 
 ---
 
-## 验证安装
-
-```bash
-# 1. 检查Node.js
-node --version  # v18+ ✅
-
-# 2. 检查Chromium
-chromium-browser --version  # 100+ ✅
-
-# 3. 检查依赖
-ls node_modules/puppeteer-core  # 存在 ✅
-
-# 4. 测试抓取
-node scripts/fetch-article.js "https://mp.weixin.qq.com/s/xxxxx"
-```
-
----
-
-## 卸载
-
-```bash
-# 删除Skill目录
-rm -rf wechat-monitor
-
-# 删除数据 (可选)
-rm -rf ~/.openclaw/workspace/skills/wechat-monitor
-
-# 卸载全局依赖 (可选)
-npm uninstall -g puppeteer-core
-```
-
----
-
-## 技术支持
-
-- 文档: `docs/README.md`
-- 架构: `docs/ARCHITECTURE-2G2G.md`
-- 检查脚本: `scripts/check-deps.js`
+**更新时间**: 2026-03-19
